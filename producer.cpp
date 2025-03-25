@@ -13,16 +13,16 @@ void publish_user(const User& user) {
         opts.host = "localhost";
         opts.port = 5672;
         opts.vhost = "/";
-        opts.auth = Channel::OpenOpts::BasicAuth("admin", "your_password");
+        opts.auth = Channel::OpenOpts::BasicAuth("admin", "N@!t!k854305");
 
         auto channel = Channel::Open(opts);
     
-        // string exchange_name = "amq.direct";
-        string exchange_name = "amq.fanout";
+        string exchange_name = "amq.direct";
+        // string exchange_name = "amq.fanout";
         string routing_key = "user.signup";
-        // channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_DIRECT, false, true, false); //direct exchange
+        channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_DIRECT, false, true, false); //direct exchange
         
-        channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_FANOUT, false, true, false); //fanout exchange
+        // channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_FANOUT, false, true, false); //fanout exchange
         string serialized_user;
         user.SerializeToString(&serialized_user);
 
@@ -40,21 +40,14 @@ void publish_user(const User& user) {
     }
 }
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <user_data_file>" << endl;
-        return 1;
-    }
-
+int main() {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    // Read user data from file
+    // Create user data
     User naitik;
-    fstream input(argv[1], ios::in | ios::binary);
-    if (!naitik.ParseFromIstream(&input)) {
-        cerr << "Failed to parse user data." << endl;
-        return 1;
-    }
+    naitik.set_id(101);
+    naitik.set_name("Naitik");
+    naitik.set_email("naitik@example.com");
 
     publish_user(naitik);
     google::protobuf::ShutdownProtobufLibrary();

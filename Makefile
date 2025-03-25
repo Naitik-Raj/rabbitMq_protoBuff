@@ -12,21 +12,17 @@ PROTO_GEN_SRC = message.pb.cc
 PROTO_GEN_HDR = message.pb.h
 
 # Source Files
-SRC = producer.cpp consumer.cpp consumer1.cpp consumer2.cpp create_user.cpp $(PROTO_GEN_SRC)
+SRC = producer.cpp consumer.cpp consumer1.cpp consumer2.cpp $(PROTO_GEN_SRC)
 OBJ = $(SRC:.cpp=.o)
 
 # Executables
-TARGETS = producer consumer consumer1 consumer2 create_user
+TARGETS = producer consumer consumer1 consumer2
 # Default rule: build all
-all: $(TARGETS) user_data.bin
+all: $(TARGETS)
 
 # Generate ProtoBuf files	
 $(PROTO_GEN_SRC) $(PROTO_GEN_HDR): $(PROTO_SRC)
 	$(PROTOC) --cpp_out=. $<
-
-# Compile Create User
-create_user: create_user.o $(PROTO_GEN_SRC)
-	$(CXX) $(CXXFLAGS) -o $@ create_user.o $(PROTO_GEN_SRC) $(LDFLAGS)
 
 # Compile Publisher
 producer: producer.o $(PROTO_GEN_SRC)
@@ -47,16 +43,14 @@ consumer2: consumer2.o $(PROTO_GEN_SRC)
 # Compile C++ files into object files
 %.o: %.cpp $(PROTO_GEN_HDR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-# Generate User Data File
-user_data.bin: create_user
-	./create_user
+
 # Clean up generated files
 clean:
 	rm -f $(OBJ) $(TARGETS) $(PROTO_GEN_SRC) $(PROTO_GEN_HDR)
 
 # Run Publisher with a User data file
-run_producer: producer user_data.bin
-	./producer user_data.bin
+run_producer: producer
+	./producer
 
 # Run Consumer
 run_consumer: consumer
