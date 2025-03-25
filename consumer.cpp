@@ -23,7 +23,7 @@ int main() {
         opts.host = "localhost";
         opts.port = 5672;
         opts.vhost = "/";
-        opts.auth = AmqpClient::Channel::OpenOpts::BasicAuth("admin", "N@!t!k854305");
+        opts.auth = AmqpClient::Channel::OpenOpts::BasicAuth("admin", "your_pwd");
 
         auto channel = AmqpClient::Channel::Open(opts);
         cout << "Connected to RabbitMQ!" << channel << endl;
