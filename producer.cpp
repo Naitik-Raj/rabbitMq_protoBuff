@@ -2,6 +2,7 @@
 #include "message.pb.h"
 #include <fstream>
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
+#include <cstdlib>
 
 using namespace std;
 using namespace AmqpClient;
@@ -13,16 +14,16 @@ void publish_user(const User& user) {
         opts.host = "localhost";
         opts.port = 5672;
         opts.vhost = "/";
-        opts.auth = Channel::OpenOpts::BasicAuth("admin", "N@!t!k854305");
+        opts.auth = Channel::OpenOpts::BasicAuth("admin", getenv("RABBITMQ_PASSWORD"));
 
         auto channel = Channel::Open(opts);
     
-        string exchange_name = "amq.direct";
-        // string exchange_name = "amq.fanout";
+        // string exchange_name = "amq.direct";
+        string exchange_name = "amq.fanout";
         string routing_key = "user.signup";
-        channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_DIRECT, false, true, false); //direct exchange
+        // channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_DIRECT, false, true, false); //direct exchange
         
-        // channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_FANOUT, false, true, false); //fanout exchange
+        channel->DeclareExchange(exchange_name, Channel::EXCHANGE_TYPE_FANOUT, false, true, false); //fanout exchange
         string serialized_user;
         user.SerializeToString(&serialized_user);
 
